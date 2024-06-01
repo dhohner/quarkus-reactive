@@ -1,16 +1,12 @@
 package org.dah.resources;
 
 import io.quarkus.hibernate.reactive.panache.Panache;
+import io.quarkus.hibernate.reactive.panache.common.WithSession;
 import io.quarkus.panache.common.Sort;
 import io.smallrye.mutiny.Uni;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
-import jakarta.ws.rs.Consumes;
-import jakarta.ws.rs.GET;
-import jakarta.ws.rs.POST;
-import jakarta.ws.rs.Path;
-import jakarta.ws.rs.PathParam;
-import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.*;
 import org.dah.entities.User;
 import org.dah.services.UserService;
 import org.jboss.resteasy.reactive.RestResponse;
@@ -30,8 +26,9 @@ public class UserResource {
 
   @GET
   @Path("/all")
-  public Uni<List<User>> getAllUsers() {
-    return User.listAll(Sort.by("email"));
+  @WithSession
+  public Uni<User.Page> getAllUsers(@QueryParam("page") int page) {
+    return userService.getAllUsers(page);
   }
 
   @GET
@@ -42,8 +39,7 @@ public class UserResource {
 
   @POST
   public Uni<RestResponse<User>> createUser(User user) {
-    return Panache.withTransaction(user::persist)
-        .replaceWith(RestResponse.status(CREATED, user));
+    return userService.createUser(user);
   }
 
 }
