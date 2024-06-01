@@ -1,0 +1,10 @@
+quarkus:
+  datasource:
+    db-kind: postgresql
+    reactive:
+      url: postgresql://localhost:5432/users
+    username: quarkus
+    password: quarkus
+  hibernate-orm:
+    database:
+      generation: drop-and-create
