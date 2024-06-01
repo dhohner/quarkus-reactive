@@ -1,20 +1,19 @@
 package org.dah;
 
 import io.quarkus.test.junit.QuarkusTest;
-import io.restassured.response.Response;
 import org.junit.jupiter.api.Test;
 
 import static io.netty.handler.codec.http.HttpResponseStatus.BAD_REQUEST;
+import static io.netty.handler.codec.http.HttpResponseStatus.NO_CONTENT;
 import static io.netty.handler.codec.http.HttpResponseStatus.UNPROCESSABLE_ENTITY;
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.emptyString;
 import static org.hamcrest.Matchers.equalTo;
-import static org.jboss.resteasy.reactive.RestResponse.StatusCode.NO_CONTENT;
 
 @QuarkusTest
 class UserResourceTest {
 
-  static final String EMAIL_ERROR_MESSAGE = "email must contain @";
+  static final String INVALID_EMAIL_ERROR = "email must contain @";
 
   @Test
   void getUserByEmailIsNoContentForNonExistentEmail() {
@@ -22,7 +21,7 @@ class UserResourceTest {
         .pathParam("email", "non-existing-email@example.com")
         .when().get("/users/{email}")
         .then()
-        .statusCode(NO_CONTENT)
+        .statusCode(NO_CONTENT.code())
         .body(emptyString());
   }
 
@@ -34,7 +33,7 @@ class UserResourceTest {
         .then()
         .statusCode(UNPROCESSABLE_ENTITY.code())
         .body("exceptionType", equalTo("InvalidEmailException"))
-        .body("error", equalTo("email must contain @"));
+        .body("error", equalTo(INVALID_EMAIL_ERROR));
   }
 
   @Test
@@ -45,7 +44,7 @@ class UserResourceTest {
         .then()
         .statusCode(UNPROCESSABLE_ENTITY.code())
         .body("exceptionType", equalTo("InvalidEmailException"))
-        .body("error", equalTo(EMAIL_ERROR_MESSAGE));
+        .body("error", equalTo(INVALID_EMAIL_ERROR));
   }
 
   @Test
