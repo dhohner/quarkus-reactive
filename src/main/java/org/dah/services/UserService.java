@@ -1,10 +1,13 @@
 package org.dah.services;
 
 import io.quarkus.hibernate.reactive.panache.Panache;
+import io.quarkus.panache.common.Page;
 import io.smallrye.mutiny.Uni;
 import jakarta.enterprise.context.ApplicationScoped;
 import java.util.List;
 import java.util.Optional;
+
+import jakarta.ws.rs.BadRequestException;
 import org.dah.entities.User;
 import org.dah.exceptions.InvalidEmailException;
 import org.jboss.resteasy.reactive.RestResponse;
@@ -30,7 +33,10 @@ public class UserService {
   }
 
   private Uni<List<User>> getUserPage(int page) {
-    return User.findAll().page(page, 50).list();
+    if (page < 0) {
+      throw new BadRequestException("page must be a positive integer");
+    }
+    return User.findAll().page(Page.of(page, 50)).list();
   }
 
   private Optional<String> normalizeUserInput(String input) {

@@ -26,10 +26,10 @@ public class User extends PanacheEntity {
   public String lastname;
 
   @CreationTimestamp
-  LocalDateTime createdAt;
+  LocalDateTime created;
 
   @UpdateTimestamp
-  LocalDateTime updatedAt;
+  LocalDateTime modified;
 
   public static Uni<User> findByEmail(String email) {
     return find("email", email).firstResult();

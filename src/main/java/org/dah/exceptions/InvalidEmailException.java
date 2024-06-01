@@ -6,6 +6,6 @@ import static io.netty.handler.codec.http.HttpResponseStatus.UNPROCESSABLE_ENTIT
 
 public class InvalidEmailException extends WebApplicationException {
   public InvalidEmailException() {
-    super("Email containing @ is Required", UNPROCESSABLE_ENTITY.code());
+    super("email must contain @", UNPROCESSABLE_ENTITY.code());
   }
 }
