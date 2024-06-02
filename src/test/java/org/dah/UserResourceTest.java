@@ -1,6 +1,10 @@
 package org.dah;
 
 import io.quarkus.test.junit.QuarkusTest;
+
+import java.time.Duration;
+
+import org.dah.entities.User;
 import org.junit.jupiter.api.Test;
 
 import static io.netty.handler.codec.http.HttpResponseStatus.BAD_REQUEST;
@@ -9,6 +13,7 @@ import static io.netty.handler.codec.http.HttpResponseStatus.UNPROCESSABLE_ENTIT
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.emptyString;
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.notNullValue;
 
 @QuarkusTest
 class UserResourceTest {
@@ -32,7 +37,6 @@ class UserResourceTest {
         .when().get("/users/{email}")
         .then()
         .statusCode(UNPROCESSABLE_ENTITY.code())
-        .body("exceptionType", equalTo("InvalidEmailException"))
         .body("error", equalTo(INVALID_EMAIL_ERROR));
   }
 
@@ -43,7 +47,6 @@ class UserResourceTest {
         .when().get("/users/{email}")
         .then()
         .statusCode(UNPROCESSABLE_ENTITY.code())
-        .body("exceptionType", equalTo("InvalidEmailException"))
         .body("error", equalTo(INVALID_EMAIL_ERROR));
   }
 
@@ -54,7 +57,29 @@ class UserResourceTest {
         .when().get("/users/all")
         .then()
         .statusCode(BAD_REQUEST.code())
-        .body("exceptionType", equalTo("BadRequestException"))
         .body("error", equalTo("page must be a positive integer"));
+  }
+
+  @Test
+  void isStatusCreatedForCreateNonExistentEmail() {
+    User user = createUserToSave();
+    given()
+        .body(user)
+        .contentType("application/json")
+        .post("/users")
+        .then()
+        .statusCode(201)
+        .body("id", notNullValue(Long.class))
+        .body("email", equalTo(user.email))
+        .body("firstname", equalTo(user.firstname))
+        .body("lastname", equalTo(user.lastname));
+  }
+
+  private User createUserToSave() {
+    User user = new User();
+    user.email = "j.hetfield@example.com";
+    user.firstname = "James";
+    user.lastname = "Hetfield";
+    return user;
   }
 }

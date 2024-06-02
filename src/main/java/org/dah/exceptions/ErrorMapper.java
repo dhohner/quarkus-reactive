@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import io.smallrye.mutiny.CompositeException;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
+import jakarta.ws.rs.ClientErrorException;
 import jakarta.ws.rs.WebApplicationException;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.ext.ExceptionMapper;
@@ -23,8 +24,8 @@ public class ErrorMapper implements ExceptionMapper<Exception> {
   public Response toResponse(Exception exception) {
     Throwable throwable = exception;
     int code = 500;
-    if (throwable instanceof WebApplicationException) {
-      code = ((WebApplicationException) exception).getResponse().getStatus();
+    if (throwable instanceof ClientErrorException t) {
+      code = t.getResponse().getStatus();
     }
 
     // This is a Mutiny exception, and it happens,
@@ -40,7 +41,6 @@ public class ErrorMapper implements ExceptionMapper<Exception> {
         throwable.getMessage());
 
     ObjectNode exceptionJson = objectMapper.createObjectNode();
-    exceptionJson.put("exceptionType", throwable.getClass().getSimpleName());
     exceptionJson.put("code", code);
 
     if (exception.getMessage() != null) {

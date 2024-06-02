@@ -6,3 +6,4 @@ insert into users (id, firstname, lastname, email, created, modified)
 values (3, 'Bob', 'Doe', 'bob@example.com', now(), now());
 insert into users (id, firstname, lastname, email, created, modified)
 values (4, 'Alice', 'Doe', 'alice@example.com', now(), now());
+alter sequence users_seq restart with 5;
