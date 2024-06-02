@@ -1,6 +1,7 @@
-package org.dah;
+package org.dah.resources;
 
 import io.quarkus.hibernate.reactive.panache.Panache;
+import io.quarkus.test.junit.DisabledOnIntegrationTest;
 import io.quarkus.test.junit.QuarkusTest;
 
 import io.quarkus.test.vertx.RunOnVertxContext;
@@ -12,8 +13,8 @@ import static io.netty.handler.codec.http.HttpResponseStatus.BAD_REQUEST;
 import static io.netty.handler.codec.http.HttpResponseStatus.NO_CONTENT;
 import static io.netty.handler.codec.http.HttpResponseStatus.UNPROCESSABLE_ENTITY;
 import static io.restassured.RestAssured.given;
-import static org.hamcrest.Matchers.emptyString;
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.emptyString;
 import static org.hamcrest.Matchers.notNullValue;
 
 @QuarkusTest
@@ -63,6 +64,7 @@ class UserResourceTest {
 
   @Test
   @RunOnVertxContext
+  @DisabledOnIntegrationTest
   void isStatusCreatedForCreateNonExistentEmail(UniAsserter uniAsserter) {
     User user = createUserToSave("j.hetfield@example.com", "James", "Hetfield");
     given()
@@ -78,7 +80,8 @@ class UserResourceTest {
 
     // Clean up after ourselves
     // This is a bit of a hack, but it works
-    // ToDo:Find a better way to do this
+    // Cannot use TestReactiveTransaction as we create the user using our REST API
+    // The transaction is committed when we get the response and thus no rollback is possible
     uniAsserter.execute(() -> Panache.withTransaction(() -> User.findByEmail(user.email).chain(User::delete)));
   }
 

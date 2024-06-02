@@ -14,7 +14,6 @@ import org.jboss.resteasy.reactive.RestResponse;
 
 import static jakarta.ws.rs.core.Response.Status.CREATED;
 
-
 @ApplicationScoped
 public class UserService {
   public Uni<User> getUserByEmail(String email) {

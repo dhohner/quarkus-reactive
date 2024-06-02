@@ -1,8 +1,5 @@
 package org.dah.resources;
 
-import io.quarkus.hibernate.reactive.panache.Panache;
-import io.quarkus.hibernate.reactive.panache.common.WithSession;
-import io.quarkus.panache.common.Sort;
 import io.smallrye.mutiny.Uni;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
@@ -10,10 +7,6 @@ import jakarta.ws.rs.*;
 import org.dah.entities.User;
 import org.dah.services.UserService;
 import org.jboss.resteasy.reactive.RestResponse;
-
-import java.util.List;
-
-import static jakarta.ws.rs.core.Response.Status.CREATED;
 
 @Path("/users")
 @ApplicationScoped
@@ -26,7 +19,6 @@ public class UserResource {
 
   @GET
   @Path("/all")
-  @WithSession
   public Uni<User.Page> getAllUsers(@QueryParam("page") int page) {
     return userService.getAllUsers(page);
   }
