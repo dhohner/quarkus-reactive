@@ -1,9 +1,10 @@
 package org.dah;
 
+import io.quarkus.hibernate.reactive.panache.Panache;
 import io.quarkus.test.junit.QuarkusTest;
 
-import java.time.Duration;
-
+import io.quarkus.test.vertx.RunOnVertxContext;
+import io.quarkus.test.vertx.UniAsserter;
 import org.dah.entities.User;
 import org.junit.jupiter.api.Test;
 
@@ -23,7 +24,7 @@ class UserResourceTest {
   @Test
   void getUserByEmailIsNoContentForNonExistentEmail() {
     given()
-        .pathParam("email", "non-existing-email@example.com")
+        .pathParam("email", "j.hetfield@example.com")
         .when().get("/users/{email}")
         .then()
         .statusCode(NO_CONTENT.code())
@@ -61,8 +62,9 @@ class UserResourceTest {
   }
 
   @Test
-  void isStatusCreatedForCreateNonExistentEmail() {
-    User user = createUserToSave();
+  @RunOnVertxContext
+  void isStatusCreatedForCreateNonExistentEmail(UniAsserter uniAsserter) {
+    User user = createUserToSave("j.hetfield@example.com", "James", "Hetfield");
     given()
         .body(user)
         .contentType("application/json")
@@ -73,13 +75,18 @@ class UserResourceTest {
         .body("email", equalTo(user.email))
         .body("firstname", equalTo(user.firstname))
         .body("lastname", equalTo(user.lastname));
+
+    // Clean up after ourselves
+    // This is a bit of a hack, but it works
+    // ToDo:Find a better way to do this
+    uniAsserter.execute(() -> Panache.withTransaction(() -> User.findByEmail(user.email).chain(User::delete)));
   }
 
-  private User createUserToSave() {
+  private User createUserToSave(String email, String firstname, String lastname) {
     User user = new User();
-    user.email = "j.hetfield@example.com";
-    user.firstname = "James";
-    user.lastname = "Hetfield";
+    user.email = email;
+    user.firstname = firstname;
+    user.lastname = lastname;
     return user;
   }
 }
