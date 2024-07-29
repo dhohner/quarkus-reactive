@@ -3,8 +3,8 @@ quarkus:
     db-kind: postgresql
     reactive:
       url: postgresql://localhost:5432/users
-    username: quarkus
-    password: quarkus
+    username: user
+    password: password
   hibernate-orm:
     database:
       generation: drop-and-create
