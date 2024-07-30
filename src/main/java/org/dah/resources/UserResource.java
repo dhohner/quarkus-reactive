@@ -6,9 +6,10 @@ import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
 import org.dah.entities.User;
 import org.dah.services.UserService;
+import org.jboss.resteasy.reactive.Cache;
 import org.jboss.resteasy.reactive.RestResponse;
 
-@Path("/users")
+@Path("/v1/users")
 @ApplicationScoped
 @Consumes("application/json")
 @Produces("application/json")
@@ -19,19 +20,8 @@ public class UserResource {
 
   @GET
   @Path("/all")
-  public Uni<User.Page> getAllUsers(@QueryParam("page") int page) {
-    return userService.getAllUsers(page);
-  }
-
-  @GET
-  @Path("/{email}")
-  public Uni<User> getUserByEmail(@PathParam("email") String email) {
-    return userService.getUserByEmail(email);
-  }
-
-  @POST
-  public Uni<RestResponse<User>> createUser(User user) {
-    return userService.createUser(user);
+  public Uni<RestResponse<User.Page>> getAllUsers(@QueryParam("page") int page) {
+    return userService.getAllUsers(page, false);
   }
 
 }
