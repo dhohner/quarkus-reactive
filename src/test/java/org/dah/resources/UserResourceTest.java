@@ -26,7 +26,7 @@ class UserResourceTest {
   void getUserByEmailIsNoContentForNonExistentEmail() {
     given()
         .pathParam("email", "j.hetfield@example.com")
-        .when().get("/users/{email}")
+        .when().get("/v2/users/{email}")
         .then()
         .statusCode(NO_CONTENT.code())
         .body(emptyString());
@@ -36,7 +36,7 @@ class UserResourceTest {
   void getUserByEmailFailsForEmailWithoutAt() {
     given()
         .pathParam("email", "non-existing-email")
-        .when().get("/users/{email}")
+        .when().get("/v2/users/{email}")
         .then()
         .statusCode(UNPROCESSABLE_ENTITY.code())
         .body("error", equalTo(INVALID_EMAIL_ERROR));
@@ -46,7 +46,7 @@ class UserResourceTest {
   void getUserByEmailFailsForEmptyEmail() {
     given()
         .pathParam("email", " ")
-        .when().get("/users/{email}")
+        .when().get("/v2/users/{email}")
         .then()
         .statusCode(UNPROCESSABLE_ENTITY.code())
         .body("error", equalTo(INVALID_EMAIL_ERROR));
@@ -56,7 +56,7 @@ class UserResourceTest {
   void getAllUsersIsBadRequestForNonExistentEmail() {
     given()
         .queryParam("page", "-1")
-        .when().get("/users/all")
+        .when().get("/v2/users/all")
         .then()
         .statusCode(BAD_REQUEST.code())
         .body("error", equalTo("page must be a positive integer"));
@@ -70,7 +70,7 @@ class UserResourceTest {
     given()
         .body(user)
         .contentType("application/json")
-        .post("/users")
+        .post("/v2/users")
         .then()
         .statusCode(201)
         .body("id", notNullValue(Long.class))
